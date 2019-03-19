@@ -2,4 +2,4 @@
 SPX
 https://github.com/NoiseByNorthwest/php-spx
 
-
+see details at [SPX.txt]

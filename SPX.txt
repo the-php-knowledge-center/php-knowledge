@@ -1,0 +1,12 @@
+SPX's can profile both web and console apps.
+
+For web apps, it can only provide full report, while for the console app, it can provide:
+fp	Flat profile	The flat profile provided by SPX. It is the default report type and is directly printed on STDERR.
+full	Full report	This is the report type for web UI. Reports will be stored in SPX data directory and thus will be available for analysis on web UI side.
+trace	Trace file	A custom format (human readable text) trace file.
+
+SPX's profile data by default is generated at /tmp/spx
+
+The raw text file is contained at one of the .gz file, we can use gunzip to open the gz and extract the text information
+
+(We might be able to get the function call and file trace information by extracting the information in the text file)
