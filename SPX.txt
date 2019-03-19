@@ -10,3 +10,9 @@ SPX's profile data by default is generated at /tmp/spx
 The raw text file is contained at one of the .gz file, we can use gunzip to open the gz and extract the text information
 
 (We might be able to get the function call and file trace information by extracting the information in the text file)
+
+In OSX, we can find the latest modified file in the /tmp/spx by doing:
+
+find . -type f -print0 | xargs -0 stat -f "%m %N" | sort -rn | head -1 | cut -f2- -d" "
+
+(see details at: https://stackoverflow.com/questions/4561895/how-to-recursively-find-the-latest-modified-file-in-a-directory/18641147)
