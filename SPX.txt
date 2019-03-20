@@ -19,3 +19,6 @@ find . -type f -print0 | xargs -0 stat -f "%m %N" | sort -rn | head -1 | cut -f2
 
 To mock a chrome browser based request in curl, we can do something like:
 curl 'http://127.0.0.1:8080/' -H 'Connection: keep-alive' -H 'Cache-Control: max-age=0' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: en-US,en;q=0.9' -H 'Cookie: SPX_KEY=dev; SPX_BUILTINS=0; SPX_SAMPLING_PERIOD=0; SPX_DEPTH=0; SPX_METRICS=ct; SPX_ENABLED=1' --compressed
+
+We can set the Set $_SERVER variable when calling PHP from command line, so we can turn a web app into a command line app, so that we can just use SPX command line profiling also.
+see: https://stackoverflow.com/questions/10731183/set-server-variable-when-calling-php-from-command-line
