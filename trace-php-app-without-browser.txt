@@ -51,3 +51,6 @@ We can auto compute:
 
 One thing needs to make sure is about the session.
 In CLI, we will need to pass the session id in the $_COOKIE array.
+
+* We can run the SPX profiler by doing:
+SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=trace.txt php profile.php demo.profile.php
