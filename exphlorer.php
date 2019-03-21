@@ -8,7 +8,7 @@ if ($_SERVER["argc"] === 1) {
 } else if ($_SERVER["argc"] === 2) {
     $profileJSONFILE = $_SERVER["argv"][1];
     $curFile = __FILE__;
-    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=trace.txt php $curFile $profileJSONFILE trace > /dev/null";
+    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=trace.txt php $curFile $profileJSONFILE trace > /dev/null 2>&1";
     shell_exec($cmd);
     exit();
 } else if ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace') {
