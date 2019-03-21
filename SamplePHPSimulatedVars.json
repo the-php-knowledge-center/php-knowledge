@@ -1,0 +1,44 @@
+{
+    "_GET": [],
+    "_POST": {
+        "action": "login",
+        "username": "jhuang",
+        "password": "123456"
+    },
+    "_COOKIE": {
+        "SPX_KEY": "dev",
+        "SPX_BUILTINS": "0",
+        "SPX_SAMPLING_PERIOD": "0",
+        "SPX_DEPTH": "0",
+        "SPX_METRICS": "ct",
+        "SPX_ENABLED": "0",
+        "PHPSESSID": "ffff"
+    },
+    "_FILES": [],
+    "_SERVER": {
+        "DOCUMENT_ROOT": "\/Users\/zikehuang\/phpfun\/simpleserver",
+        "REMOTE_ADDR": "127.0.0.1",
+        "REMOTE_PORT": "64139",
+        "SERVER_SOFTWARE": "PHP 7.2.11 Development Server",
+        "SERVER_PROTOCOL": "HTTP\/1.1",
+        "SERVER_NAME": "127.0.0.1",
+        "SERVER_PORT": "8080",
+        "REQUEST_URI": "\/profile.php?logout=jim398",
+        "REQUEST_METHOD": "GET",
+        "SCRIPT_NAME": "\/profile.php",
+        "SCRIPT_FILENAME": "\/Users\/zikehuang\/phpfun\/simpleserver\/profile.php",
+        "PHP_SELF": "\/index.php",
+        "QUERY_STRING": "logout=jim398",
+        "HTTP_HOST": "127.0.0.1:8080",
+        "HTTP_CONNECTION": "keep-alive",
+        "HTTP_CACHE_CONTROL": "max-age=0",
+        "HTTP_UPGRADE_INSECURE_REQUESTS": "1",
+        "HTTP_USER_AGENT": "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/73.0.3683.75 Safari\/537.36",
+        "HTTP_ACCEPT": "text\/html,application\/xhtml+xml,application\/xml;q=0.9,image\/webp,image\/apng,*\/*;q=0.8,application\/signed-exchange;v=b3",
+        "HTTP_ACCEPT_ENCODING": "gzip, deflate, br",
+        "HTTP_ACCEPT_LANGUAGE": "en-US,en;q=0.9",
+        "HTTP_COOKIE": "SPX_KEY=dev; SPX_BUILTINS=0; SPX_SAMPLING_PERIOD=0; SPX_DEPTH=0; SPX_METRICS=ct; SPX_ENABLED=0; PHPSESSID=fgc0dlmofeb11hemcc9mjf225c",
+        "REQUEST_TIME_FLOAT": 1553133456.123488,
+        "REQUEST_TIME": 1553133456
+    }
+}
