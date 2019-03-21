@@ -1,1 +1,12 @@
 * The whole idea here is to construct a pure cli way to trace a php web application without using a web browser.
+* We can have a generic script, maybe named profile.php, the script will read different [profile_name].profile.json file.
+* In a [profile-name].profile.json, we can make it look like:
+{
+   "document_root": "...",
+   "script_name": "index.php",
+   "Cookie": {
+      "key1": "val1",
+      "key2": "val2",
+      ...
+   }
+}
