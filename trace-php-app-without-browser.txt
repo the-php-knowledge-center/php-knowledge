@@ -43,3 +43,6 @@ We can auto compute:
 4. HTTP_HOST
 5. HTTP_COOKIE
 ...
+
+One thing needs to make sure is about the session.
+In CLI, we will need to pass the session id in the $_COOKIE array.
