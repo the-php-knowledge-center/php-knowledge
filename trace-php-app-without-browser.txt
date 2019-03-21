@@ -1,0 +1,1 @@
+* The whole idea here is to construct a pure cli way to trace a php web application without using a web browser.
