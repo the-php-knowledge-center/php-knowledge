@@ -1,6 +1,7 @@
 <?php
 /**
  * a tool to explore and profile a php web application completely in cli
+ * see a sample for demo.profile.json
  */
 if ($_SERVER["argc"] === 1) {
     print "Usage: php {__FILE__} [profile json file]\n";
