@@ -22,4 +22,24 @@ to read the incoming data from the curl request
 
 * We can generate a phantom cli "curl like" request with a [profile_name].profile.json file
 {
+   "DOCUMENT_ROOT": "",
+   "SCRIPT_NAME": "",
+   "REQUEST_METHOD": "GET",
+   "_COOKIE": {
+      ...
+   },
+   "_GET": {
+      "action": "logout"
+   },
+   "REMOTE_ADDR": "",
+   "REMOTE_PORT": "",
+   "SERVER_PROTOCOL": "HTTP/1.1"
 }
+
+We can auto compute:
+1. PHP_SELF (same as SCRIPT_NAME)
+2. REQUEST_URI
+3. SCRIPT_FILENAME
+4. HTTP_HOST
+5. HTTP_COOKIE
+...
