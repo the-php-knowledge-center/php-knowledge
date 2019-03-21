@@ -10,3 +10,12 @@
       ...
    }
 }
+* We can unify the curl requests with the following format:
+curl -X GET -d "jim=123&ken=1984" http://127.0.0.1:8080/capture.php (then we can auto populate $_GET variables for php)
+curl -X POST -d "..." http://127.0.0.1:8080/capture.php (then we can auto populate $_POST variables for php)
+curl -X PUT -d "..." http://127.0.0.1:8080/capture.php (then we can auto populate $_PUT variables for php)
+curl -X DELETE -d "..." http://127.0.0.1:8080/capture.php (then we can auto populate $_DELETE variables for php)
+
+* In the php side, we can use:
+$data = file_get_contents("php://input");
+to read the incoming data from the curl request
