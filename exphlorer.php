@@ -10,6 +10,33 @@ if ($_SERVER["argc"] === 1) {
     $curFile = __FILE__;
     $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=trace.txt php $curFile $profileJSONFILE trace > /dev/null 2>&1";
     shell_exec($cmd);
+    //now try only get the relavant information
+    $traceContent = file_get_contents(__DIR__."/trace.txt");
+    $lines = explode("\n", trim($traceContent));
+    $numOfLines = count($lines);
+    $resultLines = [];
+    for ($i = 0; $i < $numOfLines; $i++) {
+        $lineComps = explode("|", $lines[$i]);
+        $shouldAddToResult = true;
+        //filter out unrelated information
+        if (isset($lineComps[7]) && strpos($lines[$i],$curFile) !== FALSE) {
+            $shouldAddToResult = false;
+        }
+        //modify depth
+        if (isset($lineComps[6])) {
+            $depth = (int)$lineComps[6];
+            if ($depth > 0) {
+                $lineComps[6] = $depth - 1;
+                $lineComps[6] = str_pad($lineComps[6], 10," ");
+            }
+            $lines[$i] = implode("|", $lineComps);
+        }
+        if ($shouldAddToResult) {
+            $resultLines[] = $lines[$i]; 
+        }
+    }
+    $resultContent = implode("\n", $resultLines);
+    file_put_contents(__DIR__."/trace.txt", $resultContent);
     exit();
 } else if ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace') {
     $profileJSONFILE = $_SERVER["argv"][1];
