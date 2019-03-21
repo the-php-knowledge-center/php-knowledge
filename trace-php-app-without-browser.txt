@@ -19,3 +19,7 @@ curl -X DELETE -d "..." http://127.0.0.1:8080/capture.php (then we can auto popu
 * In the php side, we can use:
 $data = file_get_contents("php://input");
 to read the incoming data from the curl request
+
+* We can generate a phantom cli "curl like" request with a [profile_name].profile.json file
+{
+}
