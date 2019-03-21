@@ -25,4 +25,4 @@ see: https://stackoverflow.com/questions/10731183/set-server-variable-when-calli
 
 * New Idea:
 We can set up some php variables and pass them in the cli. The purpose is to run any web applications in cli. See:
-[SamplePHPSimulatedVars.php]
+[SamplePHPSimulatedVars.json]
