@@ -7,16 +7,18 @@
 if ($_SERVER["argc"] === 1) {
     print "Usage: php {__FILE__} [profile json file]\n";
     exit();
-} else if ($_SERVER["argc"] === 2) {
+}
+
+if ($_SERVER["argc"] === 2) {
     $profileJSONFILE = $_SERVER["argv"][1];
     $curFile = __FILE__;
-    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=trace.txt php $curFile $profileJSONFILE trace > /dev/null 2>&1";
+    $curDir = __DIR__;
+    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$curDir/trace.txt php $curFile $profileJSONFILE trace > /dev/null 2>&1";
     shell_exec($cmd);
     //now try only get the relavant information
     $traceContent = file_get_contents(__DIR__."/trace.txt");
     $lines = explode("\n", trim($traceContent));
     $numOfLines = count($lines);
-    $resultLines = [];
     $resultContent = "";
     $tracingFiles = [];
     for ($i = 0; $i < $numOfLines; $i++) {
@@ -63,7 +65,7 @@ if ($_SERVER["argc"] === 1) {
                             $charPos = $match[1];
                             list($before) = str_split($targetFileContent, $charPos);
                             $lineNumber = strlen($before) - strlen(str_replace("\n", "", $before)) + 1;
-                            $resultContent .= $targetFileToSearch.":".$lineNumber." ".$token."\n";
+                            $resultContent .= "* ".$targetFileToSearch."(".$lineNumber.") ".$token."\n";
                         }
                     }
                 }
@@ -75,13 +77,12 @@ if ($_SERVER["argc"] === 1) {
                 $shouldAddToResult = false;
             }
         }
-        if ($shouldAddToResult) {
-            $resultLines[] = $lines[$i];
-        }
     }
-    print $resultContent;
-    exit();
-} else if ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace') {
+    //now write the result content to the file
+    file_put_contents(__DIR__."/trace.txt", $resultContent);
+}
+
+if ( ($_SERVER["argc"] === 2) || ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace')) {
     $profileJSONFILE = $_SERVER["argv"][1];
     $profileData = json_decode(file_get_contents($profileJSONFILE), true);
 
