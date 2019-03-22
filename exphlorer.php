@@ -9,77 +9,86 @@ if ($_SERVER["argc"] === 1) {
     exit();
 }
 
+$traceContent = "";
 if ($_SERVER["argc"] === 2) {
     $profileJSONFILE = $_SERVER["argv"][1];
     $curFile = __FILE__;
     $curDir = __DIR__;
-    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$curDir/trace.txt php $curFile $profileJSONFILE trace > /dev/null 2>&1";
+    $traceFile = "$curDir/trace.txt";
+    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$traceFile php $curFile $profileJSONFILE trace > /dev/null 2>&1";
     shell_exec($cmd);
     //now try only get the relavant information
-    $traceContent = file_get_contents(__DIR__."/trace.txt");
-    $lines = explode("\n", trim($traceContent));
-    $numOfLines = count($lines);
-    $resultContent = "";
-    $tracingFiles = [];
-    for ($i = 0; $i < $numOfLines; $i++) {
-        $lineComps = explode("|", $lines[$i]);
+    $traceContent = file_get_contents($traceFile);
+    if (strlen($traceContent) > 0) {
+        $lines = explode("\n", trim($traceContent));
+        $numOfLines = count($lines);
+        $resultContent = "";
+        $tracingFiles = [];
+        for ($i = 0; $i < $numOfLines; $i++) {
+            $lineComps = explode("|", $lines[$i]);
 
-        $depth = 1;
-        //modify depth
-        if (isset($lineComps[6])) {
-            $depth = (int)$lineComps[6];
-            if ($depth > 0) {
-                $lineComps[6] = $depth - 1;
-                $lineComps[6] = str_pad($lineComps[6], 10," ");
+            $depth = 1;
+            //modify depth
+            if (isset($lineComps[6])) {
+                $depth = (int)$lineComps[6];
+                if ($depth > 0) {
+                    $lineComps[6] = $depth - 1;
+                    $lineComps[6] = str_pad($lineComps[6], 10," ");
+                }
+                $lines[$i] = implode("|", $lineComps);
             }
-            $lines[$i] = implode("|", $lineComps);
-        }
 
-        $shouldAddToResult = true;
-        //filter out unrelated information
-        if (isset($lineComps[7]) && strpos($lines[$i],$curFile) !== FALSE) {
-            $shouldAddToResult = false;
-        }  else if (isset($lineComps[7]) && strpos($lines[$i], ".php") !== FALSE) {
-            if (strpos($lines[$i], "-") !== FALSE) {
+            $shouldAddToResult = true;
+            //filter out unrelated information
+            if (isset($lineComps[7]) && strpos($lines[$i],$curFile) !== FALSE) {
                 $shouldAddToResult = false;
-            } else {
-                //this is a php file
-                $file = str_replace("+/","", trim($lineComps[7]));
-                $tracingFiles[] = $file;
-            }
-        } else if (isset($lineComps[7]) && strpos($lines[$i], ".php") === FALSE) {
-            if (strpos($lineComps[7], "+") !== FALSE) {
-                //this is a function call
-                $token = str_replace("+", "", trim($lineComps[7]));
-                if (strpos($token, "{closure}") === FALSE) {
-                    //now this is a function or method call
-                    //look for the file context
-                    $tokenComps = explode("::", $token);
-                    $functionName = $tokenComps[1];
-                    $targetFileToSearch = "/".$tracingFiles[count($tracingFiles) -1];
-                    $functionFinder = '/function[\s\n]+(\S+)[\s\n]*\(/';
-                    $targetFileContent = file_get_contents($targetFileToSearch);
-                    preg_match_all( $functionFinder , $targetFileContent , $matches, \PREG_OFFSET_CAPTURE);
-                    foreach($matches[0] as $match) {
-                        if (strpos($match[0], "$functionName") !== FALSE) {
-                            $charPos = $match[1];
-                            list($before) = str_split($targetFileContent, $charPos);
-                            $lineNumber = strlen($before) - strlen(str_replace("\n", "", $before)) + 1;
-                            $resultContent .= "* ".$targetFileToSearch."(".$lineNumber.") ".$token."\n";
+            }  else if (isset($lineComps[7]) && strpos($lines[$i], ".php") !== FALSE) {
+                if (strpos($lines[$i], "-") !== FALSE) {
+                    $shouldAddToResult = false;
+                } else {
+                    //this is a php file
+                    $file = str_replace("+/","", trim($lineComps[7]));
+                    $tracingFiles[] = $file;
+                }
+            } else if (isset($lineComps[7]) && strpos($lines[$i], ".php") === FALSE) {
+                if (strpos($lineComps[7], "+") !== FALSE) {
+                    //this is a function call
+                    $token = str_replace("+", "", trim($lineComps[7]));
+                    if (strpos($token, "{closure}") === FALSE) {
+                        //now this is a function or method call
+                        //look for the file context
+                        $tokenComps = explode("::", $token);
+                        $functionName = "";
+                        if (count($tokenComps) === 2) {
+                            $functionName = $tokenComps[1];
+                        } else {
+                            $functionName = $tokenComps[0];
+                        }
+                        $targetFileToSearch = "/".$tracingFiles[count($tracingFiles) -1];
+                        $functionFinder = '/function[\s\n]+(\S+)[\s\n]*\(/';
+                        $targetFileContent = file_get_contents($targetFileToSearch);
+                        preg_match_all( $functionFinder , $targetFileContent , $matches, \PREG_OFFSET_CAPTURE);
+                        foreach($matches[0] as $match) {
+                            if (strpos($match[0], "$functionName") !== FALSE) {
+                                $charPos = $match[1];
+                                list($before) = str_split($targetFileContent, $charPos);
+                                $lineNumber = strlen($before) - strlen(str_replace("\n", "", $before)) + 1;
+                                $resultContent .= "* ".$targetFileToSearch."(".$lineNumber.") ".$token."\n";
+                            }
                         }
                     }
                 }
-            }
-            if (strpos($lines[$i], "Function") !== FALSE) {
-                $lineComps[7] = "File";
-                $shouldAddToResult = true;
-            } else {
-                $shouldAddToResult = false;
+                if (strpos($lines[$i], "Function") !== FALSE) {
+                    $lineComps[7] = "File";
+                    $shouldAddToResult = true;
+                } else {
+                    $shouldAddToResult = false;
+                }
             }
         }
+        //now write the result content to the file
+        file_put_contents($traceFile, $resultContent);
     }
-    //now write the result content to the file
-    file_put_contents(__DIR__."/trace.txt", $resultContent);
 }
 
 if ( ($_SERVER["argc"] === 2) || ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace')) {
