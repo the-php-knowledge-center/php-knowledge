@@ -1,6 +1,8 @@
 <?php
 /**
  * a tool to explore and profile a php web application completely in cli
+ * This is a proof-of-concept, more optimizations need to be made
+ * This tool will trace the list of function calls in an app.
  */
 if ($_SERVER["argc"] === 1) {
     print "Usage: php {__FILE__} [profile json file]\n";
@@ -15,13 +17,12 @@ if ($_SERVER["argc"] === 1) {
     $lines = explode("\n", trim($traceContent));
     $numOfLines = count($lines);
     $resultLines = [];
+    $resultContent = "";
+    $tracingFiles = [];
     for ($i = 0; $i < $numOfLines; $i++) {
         $lineComps = explode("|", $lines[$i]);
-        $shouldAddToResult = true;
-        //filter out unrelated information
-        if (isset($lineComps[7]) && strpos($lines[$i],$curFile) !== FALSE) {
-            $shouldAddToResult = false;
-        }
+
+        $depth = 1;
         //modify depth
         if (isset($lineComps[6])) {
             $depth = (int)$lineComps[6];
@@ -31,12 +32,54 @@ if ($_SERVER["argc"] === 1) {
             }
             $lines[$i] = implode("|", $lineComps);
         }
+
+        $shouldAddToResult = true;
+        //filter out unrelated information
+        if (isset($lineComps[7]) && strpos($lines[$i],$curFile) !== FALSE) {
+            $shouldAddToResult = false;
+        }  else if (isset($lineComps[7]) && strpos($lines[$i], ".php") !== FALSE) {
+            if (strpos($lines[$i], "-") !== FALSE) {
+                $shouldAddToResult = false;
+            } else {
+                //this is a php file
+                $file = str_replace("+/","", trim($lineComps[7]));
+                $tracingFiles[] = $file;
+            }
+        } else if (isset($lineComps[7]) && strpos($lines[$i], ".php") === FALSE) {
+            if (strpos($lineComps[7], "+") !== FALSE) {
+                //this is a function call
+                $token = str_replace("+", "", trim($lineComps[7]));
+                if (strpos($token, "{closure}") === FALSE) {
+                    //now this is a function or method call
+                    //look for the file context
+                    $tokenComps = explode("::", $token);
+                    $functionName = $tokenComps[1];
+                    $targetFileToSearch = "/".$tracingFiles[count($tracingFiles) -1];
+                    $functionFinder = '/function[\s\n]+(\S+)[\s\n]*\(/';
+                    $targetFileContent = file_get_contents($targetFileToSearch);
+                    preg_match_all( $functionFinder , $targetFileContent , $matches, \PREG_OFFSET_CAPTURE);
+                    foreach($matches[0] as $match) {
+                        if (strpos($match[0], "$functionName") !== FALSE) {
+                            $charPos = $match[1];
+                            list($before) = str_split($targetFileContent, $charPos);
+                            $lineNumber = strlen($before) - strlen(str_replace("\n", "", $before)) + 1;
+                            $resultContent .= $targetFileToSearch.":".$lineNumber." ".$token."\n";
+                        }
+                    }
+                }
+            }
+            if (strpos($lines[$i], "Function") !== FALSE) {
+                $lineComps[7] = "File";
+                $shouldAddToResult = true;
+            } else {
+                $shouldAddToResult = false;
+            }
+        }
         if ($shouldAddToResult) {
-            $resultLines[] = $lines[$i]; 
+            $resultLines[] = $lines[$i];
         }
     }
-    $resultContent = implode("\n", $resultLines);
-    file_put_contents(__DIR__."/trace.txt", $resultContent);
+    print $resultContent;
     exit();
 } else if ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace') {
     $profileJSONFILE = $_SERVER["argv"][1];
