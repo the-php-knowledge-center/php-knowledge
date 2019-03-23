@@ -32,6 +32,7 @@ to read the incoming data from the curl request
 {
    "DOCUMENT_ROOT": "",
    "SCRIPT_NAME": "",
+   ""HTTP_USER_AGENT": "curl/7.54.0"
    "REQUEST_METHOD": "GET",
    "_COOKIE": {
       ...
@@ -57,3 +58,7 @@ In CLI, we will need to pass the session id in the $_COOKIE array.
 
 * We can run the SPX profiler by doing:
 SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=trace.txt php profile.php demo.profile.php
+
+* A very important entry is:
+"HTTP_USER_AGENT": "curl/7.54.0"
+Setting this will make the application think that this is a "web app" instead of a "cli app" (encountered in frameworks like doctrine)
